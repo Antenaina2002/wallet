@@ -40,4 +40,25 @@ paths:
       responses:
         '200':
           description: List of all transactions
+
+  /currencies:
+    get:
+      summary: Get all currencies
+      responses:
+        '200':
+          description: List of all currencies
+    put:
+      summary: Add a new currency
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+      responses:
+        '201':
+          description: New currency added
       
