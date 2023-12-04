@@ -1,1 +1,35 @@
+openapi: 3.0.0
+info:
+  title: Portfolio Management API
+  version: 1.0.0
+  description: API for managing accounts, transactions, and currencies
 
+paths:
+  /accounts:
+    get:
+      summary: Get all accounts
+      responses:
+        '200':
+          description: List of all accounts
+    put:
+      summary: Add a new account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                user_name:
+                  type: string
+                currency_name:
+                  type: string
+                transaction_RIB:
+                  type: string
+                wallet:
+                  type: integer
+      responses:
+        '201':
+          description: New account added
