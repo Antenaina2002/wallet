@@ -33,3 +33,11 @@ paths:
       responses:
         '201':
           description: New account added
+
+  /transactions:
+    get:
+      summary: Get all transactions
+      responses:
+        '200':
+          description: List of all transactions
+      
