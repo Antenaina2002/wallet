@@ -11,7 +11,7 @@ public class transactionCRUD {
 
     private Connection connection;
 
-    public TransactionCRUD() {
+    public transactionCRUD() {
         this.connection = DBConnection.get_connection();
     }
 
