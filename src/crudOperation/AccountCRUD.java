@@ -16,7 +16,7 @@ public class AccountCRUD {
     }
 
     public List<accountModel> findAll() {
-        String sql = "SELECT * FROM accounts;";
+        String sql = "SELECT * FROM account;";
         List<accountModel> resultList = new ArrayList<>();
         try (Statement statement = connection.createStatement();
              ResultSet result = statement.executeQuery(sql)) {
@@ -36,34 +36,8 @@ public class AccountCRUD {
         return resultList;
     }
 
-    public List<accountModel> saveAll(List<accountModel> toSave) {
-        String sql = "INSERT INTO accounts (user, RIB, wallet) VALUES (?, ?, ?);";
-        try (PreparedStatement prepared = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
-            for (accountModel account : toSave) {
-                prepared.setString(1, account.getUser());
-                prepared.setString(2, account.getRIB());
-                prepared.setInt(3, account.getWallet());
-                prepared.addBatch();
-            }
-
-            prepared.executeBatch();
-
-            ResultSet generatedKeys = prepared.getGeneratedKeys();
-            int i = 0;
-            while (generatedKeys.next()) {
-                toSave.get(i).setId(generatedKeys.getInt(1));
-                i++;
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return toSave;
-    }
-
     public accountModel save(accountModel toSave) {
-        String sql = "INSERT INTO accounts (user, RIB, wallet) VALUES (?, ?, ?);";
+        String sql = "INSERT INTO account (user, RIB, wallet) VALUES (?, ?, ?);";
         try (PreparedStatement prepared = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             prepared.setString(1, toSave.getUser());
             prepared.setString(2, toSave.getRIB());
@@ -84,7 +58,7 @@ public class AccountCRUD {
     }
 
     public void update(accountModel toUpdate) {
-        String sql = "UPDATE accounts SET user = ?, RIB = ?, wallet = ? WHERE id = ?;";
+        String sql = "UPDATE account SET user = ?, RIB = ?, wallet = ? WHERE id = ?;";
         try (PreparedStatement prepared = connection.prepareStatement(sql)) {
             prepared.setString(1, toUpdate.getUser());
             prepared.setString(2, toUpdate.getRIB());
