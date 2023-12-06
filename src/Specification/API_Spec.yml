@@ -4,15 +4,27 @@ info:
   version: 1.0.0
   description: API for managing accounts, transactions, and currencies
 
+tags:
+  - name: Accounts
+    description: Operations related to accounts
+  - name: Transactions
+    description: Operations related to transactions
+  - name: Currencies
+    description: Operations related to currencies
+
 paths:
   /accounts:
     get:
       summary: Get all accounts
+      tags:
+        - Accounts
       responses:
         '200':
           description: List of all accounts
     put:
       summary: Add a new account
+      tags:
+        - Accounts
       requestBody:
         required: true
         content:
@@ -37,6 +49,8 @@ paths:
   /transactions:
     get:
       summary: Get all transactions
+      tags:
+        - Transactions
       responses:
         '200':
           description: List of all transactions
@@ -44,11 +58,15 @@ paths:
   /currencies:
     get:
       summary: Get all currencies
+      tags:
+        - Currencies
       responses:
         '200':
           description: List of all currencies
     put:
       summary: Add a new currency
+      tags:
+        - Currencies
       requestBody:
         required: true
         content:
