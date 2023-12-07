@@ -7,11 +7,11 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class currencyCRUD {
+public class currencyDAO {
 
     private Connection connection;
 
-    public currencyCRUD() {
+    public currencyDAO() {
         this.connection = dbConnection.get_connection();
     }
 

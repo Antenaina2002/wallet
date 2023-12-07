@@ -7,11 +7,11 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AccountCRUD implements crudOperator<accountModel> {
+public class accountDAO implements crudOperator<accountModel> {
 
     private Connection connection;
 
-    public AccountCRUD() {
+    public accountDAO() {
         this.connection = dbConnection.get_connection();
     }
 
@@ -66,35 +66,36 @@ public class AccountCRUD implements crudOperator<accountModel> {
 
     @Override
     public accountModel save(accountModel toSave) {
-        String sql = "INSERT INTO account (user, RIB, wallet) VALUES (?, ?, ?);";
-        try (PreparedStatement prepared = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            prepared.setString(1, toSave.getUser());
-            prepared.setString(2, toSave.getRIB());
-            prepared.setInt(3, toSave.getWallet());
-            prepared.executeUpdate();
-
-            ResultSet generatedKeys = prepared.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                toSave.setId(generatedKeys.getInt(1));
-            } else {
-                throw new SQLException("Save failed, no generated ID.");
+        if (toSave.getId() != 0) {
+            String sql = "UPDATE account SET user = ?, RIB = ?, wallet = ? WHERE id = ?;";
+            try (PreparedStatement prepared = connection.prepareStatement(sql)) {
+                prepared.setString(1, toSave.getUser());
+                prepared.setString(2, toSave.getRIB());
+                prepared.setInt(3, toSave.getWallet());
+                prepared.setInt(4, toSave.getId());
+                prepared.executeUpdate();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } else {
+            String sql = "INSERT INTO account (user, RIB, wallet) VALUES (?, ?, ?);";
+            try (PreparedStatement prepared = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                prepared.setString(1, toSave.getUser());
+                prepared.setString(2, toSave.getRIB());
+                prepared.setInt(3, toSave.getWallet());
+                prepared.executeUpdate();
+                ResultSet generatedKeys = prepared.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    toSave.setId(generatedKeys.getInt(1));
+                } else {
+                    throw new SQLException("Save failed, no generated ID.");
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
+
         return toSave;
     }
 
-    @Override
-    public accountModel delete(accountModel toDelete) {
-        String sql = "DELETE FROM account WHERE id = ?;";
-        try (PreparedStatement prepared = connection.prepareStatement(sql)) {
-            prepared.setInt(1, toDelete.getId());
-            prepared.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return toDelete;
-    }
 }
