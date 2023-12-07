@@ -17,7 +17,7 @@ public class transactionCRUD {
 
     public List<transactionModel> findAll() {
         String sql = "SELECT * FROM transaction;";
-        List<TransactionModel> resultList = new ArrayList<>();
+        List<transactionModel> resultList = new ArrayList<>();
         try (Statement statement = connection.createStatement();
              ResultSet result = statement.executeQuery(sql)) {
 
@@ -27,7 +27,7 @@ public class transactionCRUD {
                         result.getString("transaction_description"),
                         result.getInt("account_sending"),
                         result.getDouble("debit"),
-                        result.getString("transaction_date")
+                        result.getTimestamp("transaction_date")
                 ));
             }
 

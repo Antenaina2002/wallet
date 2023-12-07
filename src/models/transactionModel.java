@@ -1,11 +1,21 @@
 package models;
 
+import java.sql.Timestamp;
+
 public class transactionModel {
     private int id;
     private String type;
     private int accountId;
     private double amount;
-    private String date;
+    private Timestamp date;
+
+    public transactionModel(int idTransaction, String transactionDescription, int accountSending, double debit, Timestamp transactionDate) {
+        this.id = idTransaction;
+        this.type = transactionDescription;
+        this.accountId = accountSending;
+        this.amount = debit;
+        this.date = transactionDate;
+    }
 
     // Getters and setters for id
     public int getId() {
@@ -44,11 +54,11 @@ public class transactionModel {
     }
 
     // Getters and setters for date
-    public String getDate() {
+    public Timestamp getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(Timestamp date) {
         this.date = date;
     }
 }
