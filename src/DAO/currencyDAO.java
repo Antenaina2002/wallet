@@ -34,24 +34,24 @@ public class currencyDAO {
     }
 
     public currencyModel save(currencyModel toSave) {
-        String sql = "INSERT INTO currency (name) VALUES (?);";
-        try (PreparedStatement prepared = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            prepared.setString(1, toSave.getName());
-            prepared.executeUpdate();
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        if (toSave.getName() != null && !toSave.getName().isEmpty()) {
+            String sql = "UPDATE currency SET name = ? WHERE name = ?;";
+            try (PreparedStatement prepared = connection.prepareStatement(sql)) {
+                prepared.setString(1, toSave.getName());
+                prepared.setString(2, toSave.getName());
+                prepared.executeUpdate();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            String sql = "INSERT INTO currency (name) VALUES (?);";
+            try (PreparedStatement prepared = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                prepared.setString(1, toSave.getName());
+                prepared.executeUpdate();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
         return toSave;
-    }
-
-    public void update(currencyModel toUpdate) {
-        String sql = "UPDATE currency SET name = ? WHERE name = ?;";
-        try (PreparedStatement prepared = connection.prepareStatement(sql)) {
-            prepared.setString(1, toUpdate.getName());
-            prepared.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
     }
 }
