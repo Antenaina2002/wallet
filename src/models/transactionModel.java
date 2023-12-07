@@ -1,3 +1,5 @@
+package models;
+
 public class transactionModel {
     private int id;
     private String type;
