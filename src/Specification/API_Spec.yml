@@ -12,6 +12,28 @@ tags:
   - name: Currencies
     description: Operations related to currencies
 
+components:
+  schemas:
+    Account:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_name:
+          type: string
+        currency_name:
+          type: string
+        transaction_RIB:
+          type: string
+        wallet:
+          type: integer
+    
+    Currency:
+      type: object
+      properties:
+        name:
+          type: string
+
 paths:
   /accounts:
     get:
@@ -21,6 +43,7 @@ paths:
       responses:
         '200':
           description: List of all accounts
+    
     put:
       summary: Add a new account
       tags:
@@ -30,18 +53,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                id:
-                  type: integer
-                user_name:
-                  type: string
-                currency_name:
-                  type: string
-                transaction_RIB:
-                  type: string
-                wallet:
-                  type: integer
+              $ref: '#/components/schemas/Account'
       responses:
         '201':
           description: New account added
@@ -63,6 +75,7 @@ paths:
       responses:
         '200':
           description: List of all currencies
+    
     put:
       summary: Add a new currency
       tags:
@@ -72,10 +85,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                name:
-                  type: string
+              $ref: '#/components/schemas/Currency'
       responses:
         '201':
           description: New currency added
