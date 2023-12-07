@@ -1,4 +1,4 @@
-package crudOperation;
+package DAO;
 
 import connection.dbConnection;
 import models.currencyModel;
