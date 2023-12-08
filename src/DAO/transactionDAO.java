@@ -7,7 +7,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class transactionDAO {
+public abstract class transactionDAO implements crudOperator<transactionModel>{
 
     private Connection connection;
 
