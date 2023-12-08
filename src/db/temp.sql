@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS compte (
     nom VARCHAR(50),
     solde_montant DECIMAL(15, 2),
     solde_date_maj TIMESTAMP,
-    devise_id INT REFERENCES devise(id),
+    devise INT REFERENCES devise(nom),
     type VARCHAR(20) CHECK (type IN ('Banque', 'Espèce', 'Mobile Money'))
 );
 
