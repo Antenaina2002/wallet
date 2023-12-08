@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class accountDAO implements crudOperator<accountModel> {
-
     private Connection connection;
 
     public accountDAO() {
