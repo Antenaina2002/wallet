@@ -7,11 +7,11 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class transactionCRUD {
+public class transactionDAO {
 
     private Connection connection;
 
-    public transactionCRUD() {
+    public transactionDAO() {
         this.connection = dbConnection.get_connection();
     }
 
