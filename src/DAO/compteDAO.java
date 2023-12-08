@@ -89,18 +89,13 @@ public class compteDAO implements crudOperator<compte> {
             double montantTransaction = transaction.getAmount();
             String typeTransaction = transaction.getType();
 
-            if ("Banque".equals(compte.getType())) {
+            if ("Banque".equals(compte.getType()) || ("Débit".equals(typeTransaction) && compte.getMontantSolde() >= montantTransaction)) {
                 updateSolde(compte, montantTransaction, typeTransaction);
             } else {
-                if ("Débit".equals(typeTransaction) && compte.getMontantSolde() < montantTransaction) {
-                    throw new RuntimeException("Solde insuffisant pour effectuer la transaction.");
-                }
-
-                updateSolde(compte, montantTransaction, typeTransaction);
+                throw new RuntimeException("Solde insuffisant pour effectuer la transaction.");
             }
 
             compte.setDateDerniereMiseAJourSolde(Timestamp.valueOf(transaction.getDate().toString()));
-
             List<transaction> transactions = compte.getTransactions();
             transactions.add(transaction);
             compte.setTransactions(transactions);
@@ -212,6 +207,24 @@ public class compteDAO implements crudOperator<compte> {
         }
 
         return resultList;
+    }
+
+    public double getSoldeAtDateTime(int compteId, Timestamp dateTime) {
+        String sql = "SELECT solde_montant FROM compte WHERE id = ? AND solde_date_maj <= ? ORDER BY solde_date_maj DESC LIMIT 1;";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, compteId);
+            statement.setTimestamp(2, dateTime);
+
+            try (ResultSet result = statement.executeQuery()) {
+                if (result.next()) {
+                    return result.getDouble("solde_montant");
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        throw new RuntimeException("Impossible de récupérer le solde pour le compte avec l'ID " + compteId + " à la date et heure spécifiées.");
     }
 
 }
