@@ -2,7 +2,7 @@ package DAO;
 
 import connection.dbConnection;
 import models.compte;
-import models.transactionModel;
+import models.transaction;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ public class compteDAO implements crudOperator<compte> {
 
             while (result.next()) {
                 int compteId = result.getInt("id");
-                List<transactionModel> transactions = findTransactionsByCompteId(compteId);
+                List<transaction> transactions = findTransactionsByCompteId(compteId);
 
                 resultList.add(new compte(
                         compteId,
@@ -121,7 +121,7 @@ public class compteDAO implements crudOperator<compte> {
         }
     }
 
-    private List<transactionModel> findTransactionsByCompteId(int compteId) {
+    private List<transaction> findTransactionsByCompteId(int compteId) {
         // Implémenter la récupération des transactions associées à un compte
         // Utilisez une requête SQL pour récupérer les transactions pour un compte donné
         return new ArrayList<>();  // Remplacez par la liste réelle des transactions

@@ -7,11 +7,11 @@ public class compte {
     private String nom;  // Changer de "name" à "nom"
     private double montantSolde;
     private String dateDerniereMiseAJourSolde;
-    private List<transactionModel> transactions;
+    private List<transaction> transactions;
     private String devise;
     private String type;
 
-    public compte(int id, String nom, double montantSolde, String dateDerniereMiseAJourSolde, List<transactionModel> transactions, String devise, String type) {
+    public compte(int id, String nom, double montantSolde, String dateDerniereMiseAJourSolde, List<transaction> transactions, String devise, String type) {
         this.id = id;
         this.nom = nom;
         this.montantSolde = montantSolde;
@@ -37,7 +37,7 @@ public class compte {
         return dateDerniereMiseAJourSolde;
     }
 
-    public List<transactionModel> getTransactions() {
+    public List<transaction> getTransactions() {
         return transactions;
     }
 
