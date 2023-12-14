@@ -208,23 +208,6 @@ public class compteDAO implements crudOperator<compte> {
 
         return resultList;
     }
-
-    public double getSoldeAtDateTime(int compteId, Timestamp dateTime) {
-        String sql = "SELECT solde_montant FROM compte WHERE id = ? AND solde_date_maj <= ? ORDER BY solde_date_maj DESC LIMIT 1;";
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setInt(1, compteId);
-            statement.setTimestamp(2, dateTime);
-
-            try (ResultSet result = statement.executeQuery()) {
-                if (result.next()) {
-                    return result.getDouble("solde_montant");
-                }
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        throw new RuntimeException("Impossible de récupérer le solde pour le compte avec l'ID " + compteId + " à la date et heure spécifiées.");
-    }
+    
 
 }
