@@ -79,7 +79,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Table pour l'historique des transactions
-CREATE TABLE IF NOT EXISTS historiqueSolde (
+CREATE TABLE IF NOT EXISTS historique_solde (
     id SERIAL PRIMARY KEY,
     id_compte INT REFERENCES compte(id),
     ancien_solde DECIMAL(15, 2),
