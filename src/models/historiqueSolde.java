@@ -4,10 +4,10 @@ import java.sql.Timestamp;
 
 public class historiqueSolde {
     private int id;
-    private int compte; // Identifiant du compte lié
-    private double ancienSolde; // Solde avant la modification
-    private double nouveauSolde; // Solde après la modification
-    private Timestamp dateHistorique; // Date de la modification
+    private int compte;
+    private double ancienSolde;
+    private double nouveauSolde;
+    private Timestamp dateHistorique;
 
     public historiqueSolde(int id, int compte, double ancienSolde, double nouveauSolde, Timestamp dateHistorique) {
         this.id = id;
