@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS compte (
     nom VARCHAR(50),
     solde_montant DECIMAL(15, 2),
     solde_date_maj TIMESTAMP,
-    devise INT REFERENCES devise(nom),
+    devise VARCHAR(50) REFERENCES devise(nom),
     type VARCHAR(20) CHECK (type IN ('Banque', 'Espèce', 'Mobile Money'))
 );
 
@@ -43,20 +43,20 @@ CREATE TABLE IF NOT EXISTS transaction (
 -- Table pour les catégories de transactions
 CREATE TABLE IF NOT EXISTS catégorie_transaction (
     id SERIAL PRIMARY KEY,
-    référence VARCHAR(8) UNIQUE,
+    référence SERIAL UNIQUE,
     catégorie VARCHAR(50) UNIQUE,
     type_transaction VARCHAR(10) CHECK (type_transaction IN ('Débit', 'Crédit'))
 );
 
 -- Insertion des catégories de transactions
 INSERT INTO catégorie_transaction (référence, catégorie, type_transaction) VALUES
-    (LPAD(FLOOR(RANDOM() * 100000000), 8, '0'), 'alimentation', 'Débit'),
-    (LPAD(FLOOR(RANDOM() * 100000000), 8, '0'), 'transport', 'Débit'),
-    (LPAD(FLOOR(RANDOM() * 100000000), 8, '0'), 'divertissement', 'Débit'),
-    (LPAD(FLOOR(RANDOM() * 100000000), 8, '0'), 'salaire', 'Crédit'),
-    (LPAD(FLOOR(RANDOM() * 100000000), 8, '0'), 'transfert_entrant', 'Crédit'),
-    (LPAD(FLOOR(RANDOM() * 100000000), 8, '0'), 'pret_debit', 'Débit'),
-    (LPAD(FLOOR(RANDOM() * 100000000), 8, '0'), 'pret_credit', 'Crédit')
+    (DEFAULT, 'alimentation', 'Débit'),
+    (DEFAULT, 'transport', 'Débit'),
+    (DEFAULT, 'divertissement', 'Débit'),
+    (DEFAULT, 'salaire', 'Crédit'),
+    (DEFAULT, 'transfert_entrant', 'Crédit'),
+    (DEFAULT, 'pret_debit', 'Débit'),
+    (DEFAULT, 'pret_credit', 'Crédit')
 ON CONFLICT (catégorie) DO NOTHING;
 
 -- Fonction pour insérer une nouvelle transaction
@@ -78,11 +78,52 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Table pour l'historique des soldes
-CREATE TABLE IF NOT EXISTS historique_solde (
+-- Table pour l'historique des transactions
+CREATE TABLE IF NOT EXISTS historique_transaction (
     id SERIAL PRIMARY KEY,
-    compte INT REFERENCES compte(id),
+    transaction_id INT REFERENCES transaction(id),
     ancien_solde DECIMAL(15, 2),
     nouveau_solde DECIMAL(15, 2),
     date_historique TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE OR REPLACE FUNCTION somme_entrees_sorties(
+    compte_id INT,
+    date_debut TIMESTAMP,
+    date_fin TIMESTAMP
+)
+RETURNS DECIMAL AS $$
+DECLARE
+    total DECIMAL := 0;
+BEGIN
+    SELECT COALESCE(SUM(CASE WHEN type_transaction = 'Crédit' THEN montant ELSE 0 END), 0) -
+           COALESCE(SUM(CASE WHEN type_transaction = 'Débit' THEN montant ELSE 0 END), 0)
+    INTO total
+    FROM transaction
+    WHERE compte_id = $1
+    AND date_transaction BETWEEN $2 AND $3;
+
+    RETURN total;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION somme_montants_par_categorie(
+    compte_id INT,
+    date_debut TIMESTAMP,
+    date_fin TIMESTAMP
+)
+RETURNS TABLE (
+    catégorie VARCHAR(50),
+    somme_montant DECIMAL
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT ct.catégorie,
+           COALESCE(SUM(CASE WHEN t.montant IS NOT NULL THEN t.montant ELSE 0 END), 0) AS somme_montant
+    FROM catégorie_transaction ct
+    LEFT JOIN transaction t ON ct.catégorie = t.label
+                            AND t.compte_id = compte_id
+                            AND t.date_transaction BETWEEN date_debut AND date_fin
+    GROUP BY ct.catégorie;
+END;
+$$ LANGUAGE plpgsql;
