@@ -80,5 +80,45 @@ public class historiqueSoldeDAO implements crudOperator<historiqueSolde> {
         }
         return historiqueSolde;
     }
+    public static List<historiqueSolde> findByCompte(int compteId) throws SQLException {
+        Connection connection = dbConnection.get_connection();
+
+        String sql = "SELECT id, id_compte, ancien_solde, nouveau_solde, date_historique FROM historique_solde WHERE id_compte = ?";
+
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setInt(1, compteId);
+
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        List<historiqueSolde> historiquesSolde = new ArrayList<>();
+        while (resultSet.next()) {
+            historiquesSolde.add(new historiqueSolde(
+                    resultSet.getInt("id"),
+                    resultSet.getInt("id_compte"),
+                    resultSet.getDouble("ancien_solde"),
+                    resultSet.getDouble("nouveau_solde"),
+                    resultSet.getTimestamp("date_historique")
+            ));
+        }
+
+        connection.close();
+        return historiquesSolde;
+    }
+
+    public double getSolde(int compteId, Timestamp dateHeure) throws SQLException {
+        List<historiqueSolde> historiquesSolde = historiqueSoldeDAO.findByCompte(compteId);
+        // Initialise le solde à l'ancien solde du premier historique trouvé
+        // (ou 0 si aucun historique n'est trouvé)
+        double solde = historiquesSolde.isEmpty() ? 0 : historiquesSolde.get(0).getAncienSolde();
+        // Parcours les historiques de solde et accumule les nouveaux soldes
+        for (historiqueSolde historique : historiquesSolde) {
+            if (historique.getDateHistorique().compareTo(dateHeure) <= 0) {
+                solde += historique.getNouveauSolde();
+            }
+        }
+
+        return solde;
+    }
+
 
 }
