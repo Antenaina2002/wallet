@@ -127,5 +127,20 @@ public class historiqueSoldeDAO implements crudOperator<historiqueSolde> {
         return getSolde(compteId, dateHeureActuelle);
     }
 
+    public List<historiqueSolde> getHistoriqueSolde(int compteId, Timestamp dateDebut, Timestamp dateFin) throws SQLException {
+        List<historiqueSolde> historiquesSolde = historiqueSoldeDAO.findByCompte(compteId);
+
+        // Initialise la liste des historiques de solde dans l'intervalle
+        List<historiqueSolde> historiquesSoldeIntervalle = new ArrayList<>();
+
+        // Parcours les historiques de solde
+        for (historiqueSolde historique : historiquesSolde) {
+            if (historique.getDateHistorique().compareTo(dateDebut) >= 0 && historique.getDateHistorique().compareTo(dateFin) <= 0) {
+                historiquesSoldeIntervalle.add(historique);
+            }
+        }
+
+        return historiquesSoldeIntervalle;
+    }
 
 }
