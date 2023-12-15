@@ -87,3 +87,22 @@ CREATE TABLE IF NOT EXISTS historique_transaction (
     date_historique TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE OR REPLACE FUNCTION somme_entrees_sorties(
+    compte_id INT,
+    date_debut TIMESTAMP,
+    date_fin TIMESTAMP
+)
+RETURNS DECIMAL AS $$
+DECLARE
+    total DECIMAL := 0;
+BEGIN
+    SELECT COALESCE(SUM(CASE WHEN type_transaction = 'Crédit' THEN montant ELSE 0 END), 0) -
+           COALESCE(SUM(CASE WHEN type_transaction = 'Débit' THEN montant ELSE 0 END), 0)
+    INTO total
+    FROM transaction
+    WHERE compte_id = $1
+    AND date_transaction BETWEEN $2 AND $3;
+
+    RETURN total;
+END;
+$$ LANGUAGE plpgsql;
