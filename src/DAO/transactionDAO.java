@@ -2,6 +2,12 @@ package DAO;
 
 import connection.dbConnection;
 import models.transaction;
+import models.transaction;
+import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -13,6 +19,41 @@ public abstract class transactionDAO implements crudOperator<transaction> {
 
     public transactionDAO() {
         this.connection = dbConnection.get_connection();
+    }
+
+    public class TransactionProcessor {
+
+        public static Map<String, Double> calculateAmountByCategory(
+                List<transaction> transactions,
+                int accountId,
+                Timestamp startDate,
+                Timestamp endDate
+        ) {
+            Map<String, Double> amountByCategory = new HashMap<>();
+
+            for (transaction t : transactions) {
+                if (t.getAccountId() == accountId &&
+                        t.getDate().after(startDate) &&
+                        t.getDate().before(endDate)) {
+                    String category = t.getType();
+                    amountByCategory.put(category, amountByCategory.getOrDefault(category, 0.0) + t.getAmount());
+                }
+            }
+
+            for (String category : getAllCategories(transactions, accountId)) {
+                amountByCategory.putIfAbsent(category, 0.0);
+            }
+
+            return amountByCategory;
+        }
+
+        private static List<String> getAllCategories(List<transaction> transactions, int accountId) {
+            return transactions.stream()
+                    .filter(t -> t.getAccountId() == accountId)
+                    .map(transaction::getType)
+                    .distinct()
+                    .collect(Collectors.toList());
+        }
     }
 
     @Override
