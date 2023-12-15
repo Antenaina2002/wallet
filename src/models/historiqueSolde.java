@@ -4,14 +4,14 @@ import java.sql.Timestamp;
 
 public class historiqueSolde {
     private int id;
-    private int compte;
+    private int idCompte;
     private double ancienSolde;
     private double nouveauSolde;
     private Timestamp dateHistorique;
 
-    public historiqueSolde(int id, int compte, double ancienSolde, double nouveauSolde, Timestamp dateHistorique) {
+    public historiqueSolde(int id, int idCompte, double ancienSolde, double nouveauSolde, Timestamp dateHistorique) {
         this.id = id;
-        this.compte = compte;
+        this.idCompte = idCompte;
         this.ancienSolde = ancienSolde;
         this.nouveauSolde = nouveauSolde;
         this.dateHistorique = dateHistorique;
@@ -21,8 +21,8 @@ public class historiqueSolde {
         return id;
     }
 
-    public int getCompte() {
-        return compte;
+    public int getIdCompte() {
+        return idCompte;
     }
 
     public double getAncienSolde() {
@@ -41,8 +41,8 @@ public class historiqueSolde {
         this.id = id;
     }
 
-    public void setCompte(int compte) {
-        this.compte = compte;
+    public void setIdCompte(int idCompte) {
+        this.idCompte = idCompte;
     }
 
     public void setAncienSolde(double ancienSolde) {
