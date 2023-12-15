@@ -120,5 +120,12 @@ public class historiqueSoldeDAO implements crudOperator<historiqueSolde> {
         return solde;
     }
 
+    public double getSoldeActuel(int compteId) throws SQLException {
+        // Obtenir la date et l'heure actuelle
+        Timestamp dateHeureActuelle = new Timestamp(System.currentTimeMillis());
+
+        return getSolde(compteId, dateHeureActuelle);
+    }
+
 
 }
