@@ -106,3 +106,24 @@ BEGIN
     RETURN total;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION somme_montants_par_categorie(
+    compte_id INT,
+    date_debut TIMESTAMP,
+    date_fin TIMESTAMP
+)
+RETURNS TABLE (
+    catégorie VARCHAR(50),
+    somme_montant DECIMAL
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT ct.catégorie,
+           COALESCE(SUM(CASE WHEN t.montant IS NOT NULL THEN t.montant ELSE 0 END), 0) AS somme_montant
+    FROM catégorie_transaction ct
+    LEFT JOIN transaction t ON ct.catégorie = t.label
+                            AND t.compte_id = compte_id
+                            AND t.date_transaction BETWEEN date_debut AND date_fin
+    GROUP BY ct.catégorie;
+END;
+$$ LANGUAGE plpgsql;
