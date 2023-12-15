@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS compte (
     nom VARCHAR(50),
     solde_montant DECIMAL(15, 2),
     solde_date_maj TIMESTAMP,
-    devise INT REFERENCES devise(nom),
+    devise VARCHAR(50) REFERENCES devise(nom),
     type VARCHAR(20) CHECK (type IN ('Banque', 'Espèce', 'Mobile Money'))
 );
 
@@ -43,20 +43,20 @@ CREATE TABLE IF NOT EXISTS transaction (
 -- Table pour les catégories de transactions
 CREATE TABLE IF NOT EXISTS catégorie_transaction (
     id SERIAL PRIMARY KEY,
-    référence VARCHAR(8) UNIQUE,
+    référence SERIAL UNIQUE,
     catégorie VARCHAR(50) UNIQUE,
     type_transaction VARCHAR(10) CHECK (type_transaction IN ('Débit', 'Crédit'))
 );
 
 -- Insertion des catégories de transactions
 INSERT INTO catégorie_transaction (référence, catégorie, type_transaction) VALUES
-    (LPAD(FLOOR(RANDOM() * 100000000), 8, '0'), 'alimentation', 'Débit'),
-    (LPAD(FLOOR(RANDOM() * 100000000), 8, '0'), 'transport', 'Débit'),
-    (LPAD(FLOOR(RANDOM() * 100000000), 8, '0'), 'divertissement', 'Débit'),
-    (LPAD(FLOOR(RANDOM() * 100000000), 8, '0'), 'salaire', 'Crédit'),
-    (LPAD(FLOOR(RANDOM() * 100000000), 8, '0'), 'transfert_entrant', 'Crédit'),
-    (LPAD(FLOOR(RANDOM() * 100000000), 8, '0'), 'pret_debit', 'Débit'),
-    (LPAD(FLOOR(RANDOM() * 100000000), 8, '0'), 'pret_credit', 'Crédit')
+    (DEFAULT, 'alimentation', 'Débit'),
+    (DEFAULT, 'transport', 'Débit'),
+    (DEFAULT, 'divertissement', 'Débit'),
+    (DEFAULT, 'salaire', 'Crédit'),
+    (DEFAULT, 'transfert_entrant', 'Crédit'),
+    (DEFAULT, 'pret_debit', 'Débit'),
+    (DEFAULT, 'pret_credit', 'Crédit')
 ON CONFLICT (catégorie) DO NOTHING;
 
 -- Fonction pour insérer une nouvelle transaction
@@ -78,11 +78,12 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Table pour l'historique des soldes
-CREATE TABLE IF NOT EXISTS historique_solde (
+-- Table pour l'historique des transactions
+CREATE TABLE IF NOT EXISTS historique_transaction (
     id SERIAL PRIMARY KEY,
-    compte INT REFERENCES compte(id),
+    transaction_id INT REFERENCES transaction(id),
     ancien_solde DECIMAL(15, 2),
     nouveau_solde DECIMAL(15, 2),
     date_historique TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
